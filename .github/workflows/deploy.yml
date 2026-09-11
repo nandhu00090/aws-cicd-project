@@ -24,5 +24,6 @@ jobs:
           git reset --hard origin/main
           sudo apt-get update -y
           sudo apt-get install docker-compose-v2 -y
+          sudo docker rm -f $(sudo docker ps -aq) || true
           sudo docker compose down || true
           sudo docker compose up -d --build
