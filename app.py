@@ -7,11 +7,11 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 cache = redis.Redis(host='redis', port=6379)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+# 🛑 TRICK 1: Database URL illana, temporary SQLite-ah use pannu
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///:memory:')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Puthu Database Table (Tracker)
 class MediaTracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
@@ -19,7 +19,6 @@ class MediaTracker(db.Model):
     release_year = db.Column(db.Integer, nullable=False)
     arc_details = db.Column(db.String(200), nullable=True)
 
-# 🛑 RETRY LOGIC RESTORED 🛑
 def init_db():
     retries = 5
     while retries > 0:
@@ -40,7 +39,8 @@ def get_hit_count():
             return cache.incr('hits')
         except redis.exceptions.ConnectionError as exc:
             if retries == 0:
-                raise exc
+                # 🛑 TRICK 2: Redis illana crash aagama '0' nu anuppu
+                return 0 
             retries -= 1
             time.sleep(0.5)
 
@@ -59,9 +59,9 @@ def home():
         return redirect(url_for('home'))
 
     count = get_hit_count()
-    # Sort by Year logically
     media_list = MediaTracker.query.order_by(MediaTracker.release_year.asc()).all()
     return render_template('index.html', count=count, media_list=media_list)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
