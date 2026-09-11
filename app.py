@@ -15,12 +15,23 @@ db = SQLAlchemy(app)
 class MediaTracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
-    category = db.Column(db.String(50), nullable=False) # e.g., MCU, Anime
+    category = db.Column(db.String(50), nullable=False)
     release_year = db.Column(db.Integer, nullable=False)
     arc_details = db.Column(db.String(200), nullable=True)
 
-with app.app_context():
-    db.create_all()
+# 🛑 RETRY LOGIC RESTORED 🛑
+def init_db():
+    retries = 5
+    while retries > 0:
+        try:
+            with app.app_context():
+                db.create_all()
+            break
+        except Exception as e:
+            retries -= 1
+            time.sleep(3)
+
+init_db()
 
 def get_hit_count():
     retries = 5
