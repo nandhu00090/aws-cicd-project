@@ -1,9 +1,8 @@
 import time
 import redis
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
-# Redis database kooda connect panra code
 cache = redis.Redis(host='redis', port=6379)
 
 def get_hit_count():
@@ -20,7 +19,8 @@ def get_hit_count():
 @app.route('/')
 def home():
     count = get_hit_count()
-    return f"<h1>Hello Nandhu! CI/CD Automation is 100% SUCCESS! 🔥</h1><h3>This dynamic website has been viewed {count} times.</h3>"
+    # Puthu HTML file-ah call panrom
+    return render_template('index.html', count=count)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
