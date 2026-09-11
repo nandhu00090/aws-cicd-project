@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nandhu's DevOps Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; text-align: center; margin-top: 10%; }
-        .card { background-color: #1e1e1e; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.2); display: inline-block; border-top: 5px solid #ff5722; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; text-align: center; margin-top: 5%; }
+        .card { background-color: #1e1e1e; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.2); display: inline-block; border-top: 5px solid #ff5722; width: 90%; max-width: 600px; }
         h1 { color: #ff5722; }
         h2 { color: #4caf50; }
         .footer { margin-top: 30px; font-size: 0.9em; color: #888; }
+        input[type="text"] { padding: 10px; width: 60%; border-radius: 5px; border: none; margin-bottom: 10px; font-size: 16px; }
+        button { padding: 10px 20px; background-color: #ff5722; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        button:hover { background-color: #e64a19; }
+        ul { list-style-type: none; padding: 0; }
+        li { background-color: #333; margin: 5px auto; padding: 10px; border-radius: 5px; width: 80%; text-align: left; }
     </style>
 </head>
 <body>
@@ -17,8 +22,27 @@
         <h1>🚀 CI/CD Automation is 100% SUCCESS!</h1>
         <h3>Welcome to Nandhu's Enterprise Dashboard</h3>
         <hr style="border-color: #333; margin: 20px 0;">
-        <h2>Total Dashboard Views: <span style="color: #fff;">{{ count }}</span> 🔥</h2>
-        <div class="footer">Deployed dynamically via GitHub Actions & Docker</div>
+        <h2>Total Views (Redis): <span style="color: #fff;">{{ count }}</span> 🔥</h2>
+        
+        <div style="margin-top: 30px; background-color: #2a2a2a; padding: 20px; border-radius: 10px;">
+            <h3 style="color: #2196f3;">Sign the Guestbook (PostgreSQL)</h3>
+            <form method="POST">
+                <input type="text" name="visitor_name" placeholder="Enter your name" required>
+                <br>
+                <button type="submit">Submit to Database</button>
+            </form>
+            
+            <h4 style="margin-top: 20px;">Recent Visitors:</h4>
+            <ul>
+                {% for visitor in visitors %}
+                    <li>👤 {{ visitor.name }}</li>
+                {% else %}
+                    <li style="text-align: center;">No visitors yet. Be the first!</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="footer">Deployed dynamically via GitHub Actions & Docker Compose</div>
     </div>
 </body>
 </html>
