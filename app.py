@@ -17,9 +17,19 @@ class Visitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
-# Create tables automatic-a
-with app.app_context():
-    db.create_all()
+# 🛑 PUTHU LOGIC: Database ready aagura varaikum wait pannum 🛑
+def init_db():
+    retries = 5
+    while retries > 0:
+        try:
+            with app.app_context():
+                db.create_all()
+            break
+        except Exception as e:
+            retries -= 1
+            time.sleep(3) # Wait for 3 seconds before retrying
+
+init_db()
 
 def get_hit_count():
     retries = 5
@@ -34,7 +44,6 @@ def get_hit_count():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    # User form submit panna Database-la save panra code
     if request.method == 'POST':
         name = request.form.get('visitor_name')
         if name:
@@ -43,7 +52,6 @@ def home():
             db.session.commit()
         return redirect(url_for('home'))
 
-    # Display panra code
     count = get_hit_count()
     visitors = Visitor.query.order_by(Visitor.id.desc()).limit(5).all()
     return render_template('index.html', count=count, visitors=visitors)
