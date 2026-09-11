@@ -6,12 +6,30 @@ on:
       - main
 
 jobs:
-  deploy:
+  test:
+    name: Run Automated Tests
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Run PyTest
+      run: |
+        pytest test_app.py
 
+  deploy:
+    name: Deploy to AWS Server
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Deploy to Server via SSH
       uses: appleboy/ssh-action@master
       with:
@@ -27,3 +45,4 @@ jobs:
           sudo docker rm -f $(sudo docker ps -aq) || true
           sudo docker compose down || true
           sudo docker compose up -d --build
+
